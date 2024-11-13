@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emerald-Bank</title>
     <style>
-        /* Estilos generales */
+      
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -20,7 +19,6 @@
             padding: 20px;
         }
        
-        /* Sección principal */
         .hero {
             background-color: #388e3c;
             color: #fff;
@@ -48,7 +46,7 @@
         .hero button:hover {
             background-color: #145a17;
         }
-        /* Seccion servicios */
+   
         .services {
             display: flex;
             justify-content: space-around;
@@ -84,26 +82,34 @@
         .service-item button:hover {
             background-color: #1b5e20;
         }
-
-
     </style>
 </head>
 
 <body>
 <jsp:include page="NavBar.jsp" />
 
-    <!-- Sección Principal -->
-    
+ 
     <section class="hero" style= "margin-top:10%;">
-    
         <h1>Bienvenido a Emerald-Bank</h1>
         <p>Tu socio financiero de confianza.</p>
-        <button>Conoce más</button>
         
+        <% 
+            Integer userId = (Integer) session.getAttribute("userId");
+            if (userId != null) { 
+        %>
+            <p>ID de Usuario: <strong><%= userId %></strong></p>
+        <% 
+            } else { 
+        %>
+            <p>Error: Usuario no logueado</p>
+        <% 
+            } 
+        %>
+        
+        <button>Conoce más</button>
     </section>
-   
 
-    <!-- Sección de Servicios -->
+   
     <div class="container">
         <section class="services">
             <div class="service-item">
@@ -118,11 +124,12 @@
             </div>
             <div class="service-item">
                 <h3>Transferencias</h3>
-                <p>Envia tu dinero de forma segura y sin comisiones.</p>
+                <p>Envía tu dinero de forma segura y sin comisiones.</p>
                 <button>Más información</button>
             </div>
         </section>
     </div>
-	<jsp:include page="Footer.jsp" />
+    
+    <jsp:include page="Footer.jsp" />
 </body>
 </html>

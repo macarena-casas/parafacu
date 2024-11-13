@@ -77,8 +77,7 @@
 					class="dropdown-menu dropdown-menu-right mt-2 w-30 rounded shadow-lg bg-white"
 					id="menu">
 					<div class="py-1" role="none">
-
-
+					<a href="Home.jsp" class="dropdown-item text-dark">Inicio</a>
 						<a href="MenuAdmin.jsp"
 							class="dropdown-item border-bottom border-success text-dark">Menú</a>
 						<a href="AgregarCliente.jsp"
@@ -178,7 +177,3 @@
 
 </body>
 </html>
-
-
-
-
