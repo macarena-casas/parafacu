@@ -1,8 +1,6 @@
 package servlets;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,14 +34,12 @@ public class ServletSesion extends HttpServlet {
             String password = request.getParameter("password");
 
             try {
-                Connection conn = Conexion.getConexion().getSQLConexion();
-
-                
-                String query = "SELECT * FROM usuarios WHERE nombre_usuario = ? AND password = ?";
-                PreparedStatement stmt = conn.prepareStatement(query);
-                stmt.setString(1, username);  
-                stmt.setString(2, password);  
-                ResultSet rs = stmt.executeQuery();
+            	
+                Conexion cone = new Conexion();
+                cone.setearConsulta("SELECT * FROM usuarios WHERE nombre_usuario = ? AND password = ?");
+                cone.setearParametros(1, username);
+                cone.setearParametros(2, password);         
+                ResultSet rs = cone.ejecutarLectura();
 
                 if (rs.next()) {
                     int userId = rs.getInt("usuario_id");
@@ -58,10 +54,8 @@ public class ServletSesion extends HttpServlet {
                     
                     response.sendRedirect("Login.jsp?error=1");
                 }
-
                 rs.close();
-                stmt.close();
-                Conexion.getConexion().cerrarConexion();
+                cone.cerrarConexion();
 
             } catch (Exception e) {
                 e.printStackTrace();
