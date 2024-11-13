@@ -1,6 +1,27 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ page import="java.util.ArrayList"%>
 <%@ page import="entidad.*"%>
+
+
+<%
+ArrayList<Cuenta> cuentasPorCliente = (ArrayList<Cuenta>) request.getAttribute("Lista_Cuentas_cliente");
+String respuesta = null;
+if(session != null && session.getAttribute("respuesta") != null){
+respuesta = (String)session.getAttribute("respuesta");
+session.removeAttribute("respuesta");
+ %>
+<script> 
+    alert('<%= respuesta%>');
+</script>   
+<%
+respuesta = null;}
+%>
+
+
+
+
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,7 +50,7 @@
 </style>
 <script type="text/javascript">
 	function confirmarEnvio() {
-		return confirm("¿Está seguro de que desea solicitar este prestamo?");
+		return confirm("Â¿EstÃ¡ seguro de que desea solicitar este prestamo?");
 	}
 </script>
 <%
@@ -49,20 +70,28 @@
 				<div class="w-75 mx-auto">
 					<div class="d-flex flex-column align-items-center w-100">
 						<h2 class="text-center font-weight-medium mb-2 text-dark">Solicitud
-							de Préstamo</h2>
+							de PrÃ©stamo</h2>
 						<br>
 						<form id="prestamoForm"
 							class="d-flex flex-column align-items-center w-100"
-							action="ServletAdminPrestamos" method="post">
+							action="ServletPrestamosAdmin" method="post">
 							<div class="mb-4 ancho">
 								<label class="form-label" for="Cuenta de Destino">Cuenta
 									de Destino</label>
 								<div class="position-relative">
+								
+								
+								
 									<select id="CuentaDestino" name="CuentaDestino"
 										class="form-select">
+						                <% if (cuentasPorCliente != null && !cuentasPorCliente.isEmpty()) { %>
+						                    <% for (Cuenta cuenta : cuentasPorCliente) { %>
+						                        <option value="<%= cuenta.getNroCuenta() %>">NÂ° <%= cuenta.getNroCuenta() %></option>
+						                    <% } %>
+						                <% } else { %>
 
 										<option value="">No tiene cuentas disponibles</option>
-
+ <% } %>
 									</select>
 									<div
 										class="position-absolute top-50 end-0 translate-middle-y pe-2 text-gray-700">
@@ -112,7 +141,7 @@
 								</div>
 							</div>
 							<div class="mb-4 ancho">
-								<label class="form-label" for="interes">Interés Anual:</label> <input
+								<label class="form-label" for="interes">InterÃ©s Anual:</label> <input
 									required type="text" readonly id="interes" name="interes"
 									class="form-control"
 									value="<%=request.getAttribute("interes") != null ? request.getAttribute("interes") : ""%>">
@@ -132,7 +161,9 @@
 							<div class="d-flex flex-column align-items-center w-100">
 								<button type="submit" onclick="return confirmarEnvio();"
 									id="btnSolicitar" name="btnSolicitar"
-									class="btn btn-success text-dark mt-4"><strong>Solicitar</strong></button>
+									class="btn btn-success text-dark mt-4">
+									<strong>Solicitar</strong>
+								</button>
 							</div>
 						</form>
 					</div>
@@ -140,7 +171,7 @@
 					<div class="d-flex justify-content-end w-100 mt-4">
 						<a href="MenuCliente.jsp"
 							class="btn btn-outline-success text-dark "><strong>
-								Volver al menú</strong> </a>
+								Volver al menÃº</strong> </a>
 					</div>
 				</div>
 			</div>

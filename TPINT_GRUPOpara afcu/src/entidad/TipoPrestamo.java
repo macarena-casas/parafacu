@@ -30,7 +30,15 @@ public class TipoPrestamo {
 		ImporteIntereses = importeIntereses;
 		InteresAnual = interesAnual;
 	}
-
+    public TipoPrestamo( BigDecimal importeTotal, BigDecimal importeIntereses, int nroCuotas, BigDecimal cuotaMensual) {
+    	this.IdtipoPrestamo = 0;
+    	this.NroCuotas = nroCuotas;
+        this.ImporteTotal = importeTotal;
+        this.CuotaMensual = cuotaMensual;
+        this.ImporteIntereses = importeIntereses;
+        this.InteresAnual =  new BigDecimal(0);
+    }
+	
 	// sets y gets
 	public int getIdtipoPrestamo() {
 		return IdtipoPrestamo;
@@ -79,7 +87,23 @@ public class TipoPrestamo {
 	public void setInteresAnual(BigDecimal interesAnual) {
 		InteresAnual = interesAnual;
 	}
-
+	@Override
+	public boolean equals(Object obj) {
+		
+		TipoPrestamo other = (TipoPrestamo) obj;
+		
+		if (
+				CuotaMensual.equals(other.CuotaMensual)&&
+				ImporteIntereses.equals(other.ImporteIntereses)&&
+				ImporteTotal.equals(other.ImporteTotal)&&
+				NroCuotas == other.NroCuotas
+				
+				)
+		{
+			return true;
+		}
+		return true;
+	}
 
 
 }

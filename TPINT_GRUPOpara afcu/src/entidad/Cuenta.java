@@ -26,7 +26,7 @@ public class Cuenta {
 
 	public Cuenta() {
 		this.cliente = null;
-		this.fechaCreacion = Date.valueOf("01-01-1901");
+		this.fechaCreacion = Date.valueOf("1900-01-01");
 		this.tipoCuenta = null;
 		Cbu = "";
 		this.setNroCuenta (-1);

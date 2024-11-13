@@ -44,7 +44,7 @@
 									session.removeAttribute("respuesta");
 									  */%>
     <script> 
-        alert('<%%>');
+        alert('<%/*= No hay usuario logueado*/%>');
     </script>   
     <%/*
 									        respuesta = null;
@@ -85,20 +85,20 @@
 										class="btn btn-outline-success text-dark py-2 px-4 rounded text-lg w-50"><strong>Cuentas</strong></button>
 								</div>
 							</form>
-							<form action="ServletTransferenciasCliente" method="get">
+							<form action="ServletTransferenciasClientes" method="get">
 								<div class="mb-3">
 									<button type="submit" name="btnTransferencias" value="true"
 										class="btn btn-outline-success text-dark py-2 px-4 rounded text-lg w-50"><strong>Transferencias</strong></button>
 								</div>
 							</form>
-							<form action="ServletAdminPrestamos" method="get">
+							<form action="ServletPrestamosAdmin" method="get">
 								<div class="mb-3">
 									<button type="submit" name="btnSolicitarPrestamos" value="true"
 										class="btn btn-outline-success text-dark py-2 px-2  rounded text-lg w-50"><strong>Solicitar
 										préstamo</strong></button>
 								</div>
 							</form>
-							<form action="ServletPagoPrestamos" method="get">
+							<form action="ServletPrestamosPagos" method="get">
 								<div class="mb-3">
 									<button type="submit" name="btnPagoDePrestamos" value="true"
 										class="btn btn-outline-success text-dark py-2 px-2  rounded text-lg w-50"><strong>Pago de

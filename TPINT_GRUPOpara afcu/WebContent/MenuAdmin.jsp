@@ -84,7 +84,7 @@
 								</button>
 							</div>
 						</form>
-						<form action="ServletAdminPrestamos" method="get">
+						<form action="ServletPrestamosAdmin" method="get">
 							<div class="mb-3">
 								<button type="submit" name="btnPrestamos" value="true"
 									class="btn btn-outline-success text-dark py-2 px-4 rounded text-lg w-50">

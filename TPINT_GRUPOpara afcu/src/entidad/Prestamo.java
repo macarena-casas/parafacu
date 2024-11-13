@@ -39,6 +39,14 @@ public class Prestamo {
 		Plazopago = plazopago;
 		Estado = estado;
 	}
+	public Prestamo( Cuenta cuenta, TipoPrestamo tipoPrestamo, Date fecha, String estado,int plazopago) {
+		
+		Tipoprestamo = tipoPrestamo;
+		Fecha = fecha;
+		this.cuenta = cuenta;
+		Plazopago = plazopago;
+		Estado = estado;
+	}
 
     // gets y sets
 

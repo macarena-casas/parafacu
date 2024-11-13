@@ -15,7 +15,8 @@ public class Conexion {
     private ResultSet lector;
     private String url = "jdbc:mysql://localhost:3306/EmeraldBank_GRUPO14?useSSL=false&useUnicode=yes";
     private String user = "root"; 
-    private String password = "";
+    private String password = "root";
+   //private String password = "";
 
     public Conexion() {
         try {  
