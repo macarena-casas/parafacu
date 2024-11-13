@@ -21,44 +21,52 @@ public class ServletSesion extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        
-        try {
-            
-            Connection conn = Conexion.getConexion().getSQLConexion();
-            
-           
-            String query = "SELECT usuario_id FROM usuarios WHERE nombre_usuario = ? AND password = ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, username);  
-            stmt.setString(2, password);  
-            ResultSet rs = stmt.executeQuery();
+        String btnCerrarSesion = request.getParameter("btnCerrarSesion");
 
-            if (rs.next()) {
+        if (btnCerrarSesion != null && btnCerrarSesion.equals("true")) {
+          
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();  
+            }
+            response.sendRedirect("Login.jsp"); 
+        } else {
+            
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+
+            try {
+                Connection conn = Conexion.getConexion().getSQLConexion();
+
                 
-                int userId = rs.getInt("usuario_id");  
-                
-               
-                HttpSession session = request.getSession();
-                session.setAttribute("userId", userId);
-                
-               
-                response.sendRedirect("Home.jsp");
-            } else {
-               
+                String query = "SELECT * FROM usuarios WHERE nombre_usuario = ? AND password = ?";
+                PreparedStatement stmt = conn.prepareStatement(query);
+                stmt.setString(1, username);  
+                stmt.setString(2, password);  
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    int userId = rs.getInt("usuario_id");
+                    int tipousuario = rs.getInt("tipo_usuario_id");
+                    
+                    HttpSession session = request.getSession();
+                    session.setAttribute("userId", userId);
+                    session.setAttribute("tipo_usuario_id", tipousuario);
+
+                    response.sendRedirect("Home.jsp"); 
+                } else {
+                    
+                    response.sendRedirect("Login.jsp?error=1");
+                }
+
+                rs.close();
+                stmt.close();
+                Conexion.getConexion().cerrarConexion();
+
+            } catch (Exception e) {
+                e.printStackTrace();
                 response.sendRedirect("Login.jsp?error=1");
             }
-            
-            
-            rs.close();
-            stmt.close();
-            Conexion.getConexion().cerrarConexion();
-            
-        } catch (Exception e) {
-           
-            e.printStackTrace();
-            response.sendRedirect("Login.jsp?error=1");
         }
     }
 }
