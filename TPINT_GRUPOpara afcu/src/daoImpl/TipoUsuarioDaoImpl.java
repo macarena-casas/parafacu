@@ -1,42 +1,37 @@
 package daoImpl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import dao.TipoUsuarioDao;
 import entidad.TipoUsuario;
 
 public class TipoUsuarioDaoImpl implements TipoUsuarioDao {
-
-    private static final String get = "SELECT * FROM tipos_usuarios WHERE tipos_usuario_id = ?";
-
-    public TipoUsuario get(int idtipousuario) {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        
-        PreparedStatement statement;
-        Connection conexion = Conexion.getConexion().getSQLConexion();
+    @Override
+    public TipoUsuario get(int idTipoUsuario) {
+        TipoUsuario tipoUsuario = null;
+        Conexion conexion = new Conexion();
         
         try {
-            statement = conexion.prepareStatement(get);
-            statement.setInt(1, idtipousuario);
-            ResultSet resultSet = statement.executeQuery();
+            
+            conexion.setearConsulta("SELECT * FROM tipos_usuarios WHERE tipos_usuario_id = ?");
+            conexion.setearParametros(1, idTipoUsuario);
+
+           
+            ResultSet resultSet = conexion.ejecutarLectura();
+
             
             if (resultSet.next()) {
-                TipoUsuario tipoUsuario = new TipoUsuario(
+                tipoUsuario = new TipoUsuario(
                     resultSet.getInt("tipos_usuario_id"),
                     resultSet.getString("tipo_usuario")
                 );
-                return tipoUsuario;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            
+            conexion.cerrarConexion();
         }
-        return null;
-}
+
+        return tipoUsuario;
+    }
 }

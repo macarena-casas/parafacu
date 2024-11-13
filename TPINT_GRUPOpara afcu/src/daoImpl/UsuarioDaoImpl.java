@@ -24,34 +24,28 @@ public class UsuarioDaoImpl implements UsuarioDao {
 
 	@Override
 	public Usuario get(int usuario_id) {
-		try 
-    	{
-    		Class.forName("com.mysql.jdbc.Driver");
-    	}catch (ClassNotFoundException e){
-    		e.printStackTrace();
-    	}
-		PreparedStatement statement;
-		Connection conexion = Conexion.getConexion().getSQLConexion();
-		
-		try {
-			statement = conexion.prepareStatement(get);
-			statement.setInt(1, usuario_id);
-			ResultSet result_set = statement.executeQuery();
-			while(result_set.next()) {
-				
-				TipoUsuarioDaoImpl tipoUsuarioDaoImpl = new TipoUsuarioDaoImpl();
-				String nombre_usuario = result_set.getString("nombre_usuario");
-				String contraseña = result_set.getString("password");
-				TipoUsuario tipousuario = tipoUsuarioDaoImpl.get(result_set.getInt("tipo_usuario_id"));
-				int id_usuario = result_set.getInt("usuario_id");
-				Usuario usuario = new Usuario(id_usuario,nombre_usuario,contraseña,tipousuario);
-				return usuario;
-			}
-		}		
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	    Conexion conexion = new Conexion();
+	    Usuario usuario = null;
+
+	    try {
+	        conexion.setearConsulta(get);
+	        conexion.setearParametros(1, usuario_id);
+	        ResultSet resultSet = conexion.ejecutarLectura();
+
+	        if (resultSet.next()) {
+	            TipoUsuarioDaoImpl tipoUsuarioDaoImpl = new TipoUsuarioDaoImpl();
+	            String nombre_usuario = resultSet.getString("nombre_usuario");
+	            String contraseña = resultSet.getString("password");
+	            TipoUsuario tipousuario = tipoUsuarioDaoImpl.get(resultSet.getInt("tipo_usuario_id"));
+	            int id_usuario = resultSet.getInt("usuario_id");
+	            usuario = new Usuario(id_usuario, nombre_usuario, contraseña, tipousuario);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        conexion.cerrarConexion();
+	    }
+	    return usuario;
 	}
 
 

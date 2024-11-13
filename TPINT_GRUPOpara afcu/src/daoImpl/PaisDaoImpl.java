@@ -1,7 +1,5 @@
 package daoImpl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
@@ -14,30 +12,26 @@ public class PaisDaoImpl implements PaisDao {
 
 	@Override
 	public Pais get(int idPais) {
-		try 
-    	{
-    		Class.forName("com.mysql.jdbc.Driver");
-    	}catch (ClassNotFoundException e){
-    		e.printStackTrace();
-    	}
-		PreparedStatement statement;
-		Connection conexion = Conexion.getConexion().getSQLConexion();
-		
+		Conexion conexion = new Conexion();
+		Pais pais = null;
+
 		try {
-			statement = conexion.prepareStatement(get);
-			statement.setInt(1, idPais);
-			ResultSet result_set = statement.executeQuery();
-			while(result_set.next()) {
-				String nombre_pais = result_set.getString("nombre");
-				int paisId = result_set.getInt("pais_id");
-				Pais pais = new Pais(paisId,nombre_pais);
-				return pais;
+			conexion.setearConsulta(get);
+			conexion.setearParametros(1, idPais);
+			ResultSet resultSet = conexion.ejecutarLectura();
+
+			if (resultSet.next()) {
+				String nombrePais = resultSet.getString("nombre");
+				int paisId = resultSet.getInt("pais_id");
+				pais = new Pais(paisId, nombrePais);
 			}
-		}		
-		catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			conexion.cerrarConexion();
 		}
-		return null;
+
+		return pais;
 	}
 
 	@Override
@@ -45,5 +39,4 @@ public class PaisDaoImpl implements PaisDao {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

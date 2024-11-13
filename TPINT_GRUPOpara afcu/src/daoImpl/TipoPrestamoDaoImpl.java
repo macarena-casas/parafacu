@@ -1,39 +1,31 @@
 package daoImpl;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import dao.TipoPrestamoDao;
 import entidad.TipoPrestamo;
 
 public class TipoPrestamoDaoImpl implements TipoPrestamoDao {
 
-	private static final String get = "SELECT * FROM tipos_prestamo WHERE importe_total = ? and nro_cuotas = ?";
-    private static final String getbyId = "SELECT * FROM tipos_prestamo WHERE tipo_prestamo_id = ?";
-    
-    
+    private static final String OBTENER_POR_MONTO_Y_CUOTAS = 
+        "SELECT * FROM tipos_prestamo WHERE importe_total = ? AND nro_cuotas = ?";
+    private static final String OBTENER_POR_ID = 
+        "SELECT * FROM tipos_prestamo WHERE tipo_prestamo_id = ?";
+
     @Override
     public TipoPrestamo get(int cuotas, BigDecimal monto) {
+        TipoPrestamo tipoPrestamo = null;
+        Conexion conexion = new Conexion();
+
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        
-        PreparedStatement statement;
-        Connection conexion = Conexion.getConexion().getSQLConexion();
-        
-        try {
-            statement = conexion.prepareStatement(get);
-            statement.setBigDecimal(1, monto);
-            statement.setInt(2, cuotas);
-            ResultSet resultSet = statement.executeQuery();
-            
+            conexion.setearConsulta(OBTENER_POR_MONTO_Y_CUOTAS);
+            conexion.setearParametros(1, monto);
+            conexion.setearParametros(2, cuotas);
+
+            ResultSet resultSet = conexion.ejecutarLectura();
+
             if (resultSet.next()) {
-                TipoPrestamo tipoPrestamo = new TipoPrestamo(
+                tipoPrestamo = new TipoPrestamo(
                     resultSet.getInt("tipo_prestamo_id"),
                     resultSet.getInt("nro_cuotas"),
                     resultSet.getBigDecimal("importe_total"),
@@ -41,31 +33,29 @@ public class TipoPrestamoDaoImpl implements TipoPrestamoDao {
                     resultSet.getBigDecimal("importe_intereses"),
                     resultSet.getBigDecimal("interes_anual")
                 );
-                return tipoPrestamo;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            conexion.cerrarConexion();
         }
-        return null;
+
+        return tipoPrestamo;
     }
 
-    public TipoPrestamo get(int idtipoprestamo) {
+    @Override
+    public TipoPrestamo get(int idTipoPrestamo) {
+        TipoPrestamo tipoPrestamo = null;
+        Conexion conexion = new Conexion();
+
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        
-        PreparedStatement statement;
-        Connection conexion = Conexion.getConexion().getSQLConexion();
-        
-        try {
-            statement = conexion.prepareStatement(getbyId);
-            statement.setInt(1, idtipoprestamo);
-            ResultSet resultSet = statement.executeQuery();
-            
+            conexion.setearConsulta(OBTENER_POR_ID);
+            conexion.setearParametros(1, idTipoPrestamo);
+
+            ResultSet resultSet = conexion.ejecutarLectura();
+
             if (resultSet.next()) {
-                TipoPrestamo tipoPrestamo = new TipoPrestamo(
+                tipoPrestamo = new TipoPrestamo(
                     resultSet.getInt("tipo_prestamo_id"),
                     resultSet.getInt("nro_cuotas"),
                     resultSet.getBigDecimal("importe_total"),
@@ -73,13 +63,13 @@ public class TipoPrestamoDaoImpl implements TipoPrestamoDao {
                     resultSet.getBigDecimal("importe_intereses"),
                     resultSet.getBigDecimal("interes_anual")
                 );
-                return tipoPrestamo;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            conexion.cerrarConexion();
         }
-        return null;
+
+        return tipoPrestamo;
     }
 }
-
-
