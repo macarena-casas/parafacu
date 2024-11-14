@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import daoImpl.Conexion;
 import negocioImpl.ClienteNegocioImpl;
 import negocioImpl.UsuarioNegocioImpl;
 import negocioImpl.LocalidadNegocioImpl;
@@ -57,7 +59,7 @@ public class ServletAdminCliente extends HttpServlet {
     	
     	HttpSession session = request.getSession();  
     	
-    	if(session == null || session.getAttribute("tipoUsuario") != "admin") {
+    	if(session == null) {
     		RequestDispatcher dispatcher = request.getRequestDispatcher("/Login.jsp");
     		dispatcher.forward(request, response);
     	}
@@ -104,12 +106,88 @@ public class ServletAdminCliente extends HttpServlet {
             
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession();  
-    	if(session == null || session.getAttribute("tipoUsuario") != "admin") {
-    		RequestDispatcher dispatcher = request.getRequestDispatcher("/Login.jsp");
-    		dispatcher.forward(request, response);
+    	HttpSession session = request.getSession(false);
+    	if (session == null) {
+    	    // Si la sesión no existe, redirige al login
+    	    System.out.println("Sesión no encontrada. Redirigiendo a Login.jsp.");
+    	    request.getRequestDispatcher("/Login.jsp").forward(request, response);
+    	    
     	}
-    	
+
+    	if (session != null) {
+    	    // Si la sesión existe, obtenemos el userId
+    	    Integer userId = (Integer) session.getAttribute("userId");
+    	    if (userId != null) {
+    	        System.out.println("Usuario autenticado. userId: " + userId);
+    	        
+    	        Conexion conexion = new Conexion();
+    	        try {
+    	            // Ejecutamos la consulta con el userId
+    	            System.out.println("Preparando consulta para obtener datos del cliente.");
+    	            conexion.setearConsulta("SELECT * FROM clientes WHERE usuario_id = ?");
+    	            conexion.setearParametros(1, userId);
+    	            ResultSet rs = conexion.ejecutarLectura();
+    	            
+    	            if (rs.next()) {
+    	                // Si se encuentra un cliente, procesamos la información
+    	                System.out.println("Cliente encontrado. Procesando datos...");
+    	                
+    	                String nombreCliente = rs.getString("nombre");
+    	                String apellidoCliente = rs.getString("apellido");
+    	                String dni = rs.getString("dni");
+    	                String cuil = rs.getString("cuil");
+    	                String sexo = rs.getString("sexo");
+    	                String nacionalidad = rs.getString("nacionalidad");
+    	                Date fechanacimiento = rs.getDate("fecha_nacimiento");
+    	                String direccion = rs.getString("direccion");
+    	                String correo = rs.getString("correo_electronico");
+    	                String telefono = rs.getString("telefono");
+
+    	                // Establecemos los atributos para la JSP
+    	                request.setAttribute("nombreCliente", nombreCliente);
+    	                request.setAttribute("apellidoCliente", apellidoCliente);
+    	                request.setAttribute("dni", dni);
+    	                request.setAttribute("cuil", cuil);
+    	                request.setAttribute("sexo", sexo);
+    	                request.setAttribute("nacionalidad", nacionalidad);
+    	                request.setAttribute("fechanacimiento", fechanacimiento);
+    	                request.setAttribute("direccion", direccion);
+    	                request.setAttribute("correo", correo);
+    	                request.setAttribute("telefono", telefono);
+
+    	                // Redirigimos a la página DetalleCliente.jsp
+    	                System.out.println("Datos del cliente preparados. Redirigiendo a DetalleCliente.jsp.");
+    	                request.getRequestDispatcher("DetalleCliente.jsp").forward(request, response);
+    	               
+    	            } else {
+    	                // Si no se encuentra el cliente, mostrar error y evitar forward
+    	                System.out.println("No se encontró la cuenta asociada al usuario.");
+    	                request.setAttribute("error", "No se encontró la cuenta asociada al usuario.");
+    	                request.getRequestDispatcher("errorPage.jsp").forward(request, response);  // Redirigir a una página de error
+    	            }
+
+    	            rs.close();
+    	            conexion.cerrarConexion();
+
+    	        } catch (Exception e) {
+    	            // Manejo de excepciones
+    	            System.out.println("Error al obtener los datos de la cuenta.");
+    	            e.printStackTrace();
+    	            request.setAttribute("error", "Error al obtener los datos de la cuenta.");
+    	            request.getRequestDispatcher("errorPage.jsp").forward(request, response);  // Redirigir a una página de error
+    	        }
+    	    } else {
+    	        // Si no hay userId en la sesión
+    	        System.out.println("Usuario no autenticado.");
+    	        request.setAttribute("error", "Usuario no autenticado.");
+    	        request.getRequestDispatcher("errorPage.jsp").forward(request, response);  // Redirigir a una página de error
+    	    }
+    	} else {
+    	    // Si la sesión es nula, redirige al login
+    	    System.out.println("Sesión expirada o no encontrada. Redirigiendo a Login.jsp.");
+    	    response.sendRedirect("Login.jsp");  // Este sí es un redireccionamiento
+    	}
+
     	if(request.getParameter("btnGuardarCambios") != null) {
 			try{
 				String dni = request.getParameter("dni");
@@ -167,6 +245,8 @@ public class ServletAdminCliente extends HttpServlet {
          	
          }
     	 else if(request.getParameter("btnAgregarClienteNuevo") != null) { 
+    		 
+    		 try {
     		       		  
     		   /* Provincia auxProv = (Provincia)listaProvincia.stream().filter(x -> x.getProvinciaId() ==  Integer.parseInt(request.getParameter("provincia"))).findFirst().orElse(null);
     		  //  Localidad auxLoc = (Localidad)listaLocalidad.stream().filter(x -> x.getLocalidadId() ==  Integer.parseInt(request.getParameter("localidad"))).findFirst().orElse(null);
@@ -227,15 +307,19 @@ public class ServletAdminCliente extends HttpServlet {
 	                 cargarDesplegables(request);
 	                RequestDispatcher dispatcher = request.getRequestDispatcher("/AgregarCliente.jsp");
 	                dispatcher.forward(request, response);
-	         
+    		 } 
+    		 catch (Exception ex) {
+    			 session.setAttribute("respuesta", "Error. El cliente ya se encuentra ingresado.");
+              	cargarDesplegables(request);
+                  RequestDispatcher dispatcher = request.getRequestDispatcher("/AgregarCliente.jsp");
+                  //dispatcher.forward(request, response);
+                  throw ex;
+    		 }
+    		 finally {
+    			 //aca iria cerrar conexion o tal
+    		 }
              
-             }else {
-            	session.setAttribute("respuesta", "Error. El cliente ya se encuentra ingresado.");
-            	cargarDesplegables(request);
-                RequestDispatcher dispatcher = request.getRequestDispatcher("/AgregarCliente.jsp");
-                dispatcher.forward(request, response);
-
-           }
+             }
     		    
     	 } 
         

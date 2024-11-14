@@ -103,6 +103,9 @@
 							class="dropdown-item text-dark">Préstamos</a> <a
 							href="ServletReportes?btnReportes"
 							class="dropdown-item text-dark">Reportes</a>
+							<form action="ServletAdminCliente" method="post">
+							<button type="submit" value="true" class="dropdown-item text-dark">Ver detalle de cuenta</button>
+							</form>
 
 
 						<%
@@ -121,7 +124,10 @@
 							class="dropdown-item text-dark">Solicitar Préstamo</a> <a
 							href="ServletPrestamosPagos?btnPagoDePrestamos"
 							class="dropdown-item text-dark">Pago de Préstamos</a>
-
+							<form action="ServletAdminCliente" method="post">
+							<button type="submit" value="true" class="dropdown-item text-dark">Ver detalle de cuenta</button>
+							</form>
+							
 
 						<%
 							}
